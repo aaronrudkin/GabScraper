@@ -1,10 +1,10 @@
 """ Scrapes Gab.ai posts. """
 
+# pylint: disable=unsubscriptable-object
 import argparse
 import json
 import os
 import random
-import sys
 import time
 import traceback
 import mechanize
@@ -32,22 +32,23 @@ def login(username="", password=""):
 			print "No password specified."
 			return
 
-	b = mechanize.Browser()
-	b.set_handle_robots(False)
-	b.set_handle_refresh(False)
-	b.addheaders = [("User-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")]
-	r = b.open("https://gab.ai/auth/login")
+	browser = mechanize.Browser()
+	browser.set_handle_robots(False)
+	browser.set_handle_refresh(False)
+	browser.addheaders = [("User-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")]
+	r = browser.open("https://gab.ai/auth/login")
 
-	b.select_form(nr = 0)
-	b["username"] = username 
-	b["password"] = password
-	r = b.submit()
+	browser.select_form(nr=0)
+	browser["username"] = username
+	browser["password"] = password
+	r = browser.submit()
 
+	# Debug output post-login
 	print r.read()[0:500]
 
-	return b
+	return browser
 
-def process_posts(b, post_numbers):
+def process_posts(browser, post_numbers):
 	""" Scrapes the specified posts. """
 
 	j = 0
@@ -63,7 +64,7 @@ def process_posts(b, post_numbers):
 			if random.randint(1, 10) == 10:
 				print "Skipping "  + str(i)
 			continue
-		
+
 		# Make directory structure if necessary.
 		if not os.path.exists("posts"):
 			os.makedirs("posts")
@@ -76,24 +77,24 @@ def process_posts(b, post_numbers):
 
 		# Read the post
 		try:
-			r = b.open("https://gab.ai/posts/" + str(i))
-			d = r.read()
-			f = open("posts/" + ones + "/" + tens + "/" + hundreds + "/" + str(i) + ".json","w")
-			f.write(d)
-			f.close()
-			print d
+			r = browser.open("https://gab.ai/posts/" + str(i))
+			data = r.read()
+			with open("posts/" + ones + "/" + tens + "/" + hundreds + "/" + str(i) + ".json", "w") as f:
+				f.write(data)
+
+			print data
 			print i
 			print ""
 		# Error handling.
-		except mechanize.HTTPError as e:
-			if isinstance(e.code, int) and e.code == 404:
+		except mechanize.HTTPError as error_data:
+			if isinstance(error_data.code, int) and error_data.code == 404:
 				print "Gab post deleted or ID not allocated"
 				print i
-			elif isinstance(e.code, int) and e.code == 400:
+			elif isinstance(error_data.code, int) and error_data.code == 400:
 				print "Invalid request -- possibly a private Gab post?"
 				print i
 			else:
-				print e.code
+				print error_data.code
 				print traceback.format_exc()
 				print "ERROR: DID NOT WORK"
 				print i
@@ -121,8 +122,8 @@ def process_posts(b, post_numbers):
 			time.sleep(random.randint(60, 90))
 			k = 0
 
-
-if __name__ == "__main__":
+def process_args():
+	""" Extracts command line arguments. """
 	parser = argparse.ArgumentParser(description="Gab.ai scraper.")
 	parser.add_argument("-u", "--username", action="store", dest="username", help="Specify a username", default="")
 	parser.add_argument("-p", "--password", action="store", dest="password", help="Specify a password", default="")
@@ -148,3 +149,6 @@ if __name__ == "__main__":
 		process_posts(browser, post_order)
 	else:
 		print "Failed login."
+
+if __name__ == "__main__":
+	process_args()
