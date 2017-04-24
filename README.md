@@ -2,6 +2,25 @@
 
 This code scrapes a range of post IDs from [Gab.ai](http://gab.ai/), given a user login. I wrote it as part of an upcoming investigation into elite message transmission and social network analysis of Gab.
 
+## Example data
+
+`cat REDACTED.json`
+
+```javascript
+{"id":REDACTED,"created_at":"2016-09-14T21:16:21+00:00","revised_at":null,"edited":false,
+"body":"Just picked up my new copy of #Pepe's newest best seller!  Can't wait to read it!\n\nhttps:\/\/i.sli.mg\/QdG2yn.png\n\n#Trump\n#MAGA",
+"only_emoji":false,"liked":false,"disliked":false,"bookmarked":false,"repost":false,"reported":false,
+"score":15,"like_count":0,"dislike_count":0,"is_quote":false,"is_reply":false,"is_replies_disabled":false,
+"embed":{"html":"<a href=\"https:\/\/i.sli.mg\/QdG2yn.png\" target=\"_blank\" class=\"post__embed__body post__embed__body--photo\"><div class=\"post__embed__body__image\" style=\"background-image: url('https:\/\/ipr2.gab.ai\/9ab9fc66af8e49914d18ef9fd406d3059f647cb0\/68747470733a2f2f692e736c692e6d672f51644732796e2e706e67\/')\"><\/div><\/a>",
+	"iframe":false},
+"category":null,"category_details":null,
+"user":{
+	"id":REDACTED,"name":REDACTED,"username":REDACTED,
+	"picture_url":"https:\/\/gabfiles.blob.core.windows.net\/user\/5845aa24deb46.jpg",
+	"verified":false,"is_donor":false,"is_pro":false,"is_private":false}
+}
+```
+
 ## Installation instructions
 
 0. Install Python `mechanize` module.
