@@ -140,7 +140,7 @@ def process_args():
 		except:
 			print "Failed to get post number limits."
 			min_num = 1
-			max_num = 1000000
+			max_num = 10000
 
 	post_order = shuffle_posts(min_num, max_num)
 	browser = login(args["username"], args["password"])
