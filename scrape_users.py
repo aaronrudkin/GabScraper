@@ -1,5 +1,6 @@
 """ Scrapes Gab.ai posts. """
 
+# pylint: disable=unsubscriptable-object
 import argparse
 import json
 import os
@@ -31,22 +32,22 @@ def login(username="", password=""):
 			print "No password specified."
 			return
 
-	b = mechanize.Browser()
-	b.set_handle_robots(False)
-	b.set_handle_refresh(False)
-	b.addheaders = [("User-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")]
-	r = b.open("https://gab.ai/auth/login")
+	browser = mechanize.Browser()
+	browser.set_handle_robots(False)
+	browser.set_handle_refresh(False)
+	browser.addheaders = [("User-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")]
+	r = browser.open("https://gab.ai/auth/login")
 
-	b.select_form(nr = 0)
-	b["username"] = username 
-	b["password"] = password
-	r = b.submit()
+	browser.select_form(nr=0)
+	browser["username"] = username
+	browser["password"] = password
+	r = browser.submit()
 
 	print r.read()[0:500]
 
-	return b
+	return browser
 
-def process_users(b, user_names):
+def process_users(browser, user_names):
 	""" Scrapes the specified posts. """
 
 	j = 0
@@ -60,7 +61,7 @@ def process_users(b, user_names):
 		if os.path.isfile("users/" + prefix + "/" + i + ".json"):
 			print "Already have user " + i + ". Skipping."
 			continue
-		
+
 		# Make directory structure if necessary.
 		if not os.path.exists("users"):
 			os.makedirs("users")
@@ -70,9 +71,9 @@ def process_users(b, user_names):
 		# Read the user
 		try:
 			print str(i), "user page"
-			r = b.open("https://gab.ai/users/" + str(i))
+			r = browser.open("https://gab.ai/users/" + str(i))
 			user_data = json.loads(r.read())
-			r = b.open("https://gab.ai/users/" + str(i) + "/followers")
+			r = browser.open("https://gab.ai/users/" + str(i) + "/followers")
 			print str(i), "follower page"
 			follower_data = json.loads(r.read())
 			if not follower_data["no-more"]:
@@ -80,7 +81,7 @@ def process_users(b, user_names):
 				done = 0
 				while not done and page < 1500:
 					min_back = page * 30
-					r = b.open("https://gab.ai/users/" + str(i) + "/followers?before=" + str(min_back))
+					r = browser.open("https://gab.ai/users/" + str(i) + "/followers?before=" + str(min_back))
 					page = page + 1
 					follower_page = json.loads(r.read())
 					if follower_page["no-more"]:
@@ -94,7 +95,7 @@ def process_users(b, user_names):
 					else:
 						time.sleep(0.5)
 
-			r = b.open("https://gab.ai/users/" + str(i) + "/following")
+			r = browser.open("https://gab.ai/users/" + str(i) + "/following")
 			print str(i), "following page"
 			following_data = json.loads(r.read())
 			if not following_data["no-more"]:
@@ -102,7 +103,7 @@ def process_users(b, user_names):
 				done = 0
 				while not done and page < 1500:
 					min_back = page * 30
-					r = b.open("https://gab.ai/users/" + str(i) + "/following?before=" + str(min_back))
+					r = browser.open("https://gab.ai/users/" + str(i) + "/following?before=" + str(min_back))
 					page = page + 1
 					following_page = json.loads(r.read())
 					if following_page["no-more"]:
@@ -125,20 +126,20 @@ def process_users(b, user_names):
 			print i
 			print ""
 		# Error handling.
-		except mechanize.HTTPError as e:
-			if isinstance(e.code, int) and e.code == 429:
+		except mechanize.HTTPError as error_code:
+			if isinstance(error_code.code, int) and error_code.code == 429:
 				print "TOO MANY REQUESTS. SHUT DOWN."
 				print i
 				sys.exit(-1)
 				return
-			elif isinstance(e.code, int) and e.code == 404:
+			elif isinstance(error_code.code, int) and error_code.code == 404:
 				print "Gab post deleted or ID not allocated"
 				print i
-			elif isinstance(e.code, int) and e.code == 400:
+			elif isinstance(error_code.code, int) and error_code.code == 400:
 				print "Invalid request -- possibly a private Gab post?"
 				print i
 			else:
-				print e.code
+				print error_code.code
 				print traceback.format_exc()
 				print "ERROR: DID NOT WORK"
 				print i
@@ -172,6 +173,7 @@ def process_users(b, user_names):
 
 
 def process_args():
+	""" Reads command line arguments for what users file to use. """
 	parser = argparse.ArgumentParser(description="Gab.ai scraper.")
 	parser.add_argument("-u", "--username", action="store", dest="username", help="Specify a username", default="")
 	parser.add_argument("-p", "--password", action="store", dest="password", help="Specify a password", default="")

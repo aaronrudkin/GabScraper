@@ -1,7 +1,6 @@
 """ Takes existing user JSON data and finds usernames not already on the users list. """
 
 import json
-import os
 
 def spider():
 	""" Main spidering code, searches for everyone who follows or is following anyone in current user list. """
