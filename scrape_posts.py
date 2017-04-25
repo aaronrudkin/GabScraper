@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import random
+import sys
 import time
 import traceback
 import mechanize
@@ -87,7 +88,12 @@ def process_posts(browser, post_numbers):
 			print ""
 		# Error handling.
 		except mechanize.HTTPError as error_data:
-			if isinstance(error_data.code, int) and error_data.code == 404:
+			if isinstance(error_data.code, int) and error_data.code == 429:
+				print "ALERT TOO MANY REQUESTS SHUT DOWN"
+				print i
+				sys.exit(-1)
+				return
+			elif isinstance(error_data.code, int) and error_data.code == 404:
 				print "Gab post deleted or ID not allocated"
 				print i
 			elif isinstance(error_data.code, int) and error_data.code == 400:
