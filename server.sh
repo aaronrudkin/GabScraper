@@ -1,6 +1,6 @@
 passwd
 tmux
-apt-get install unzip python python-pip
+apt-get install unzip python python-pip tree zip
 pip install mechanize html5lib
 wget https://github.com/aaronrudkin/GabScraper/archive/master.zip
 unzip master.zip

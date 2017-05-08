@@ -17,6 +17,7 @@ def shuffle_posts(min_num, max_num):
 	random.shuffle(post_numbers)
 	return post_numbers
 
+
 def login(username="", password=""):
 	""" Login to gab.ai. """
 	if not len(username) or not len(password):
@@ -49,9 +50,11 @@ def login(username="", password=""):
 
 	return browser
 
+
 def process_posts(browser, post_numbers):
 	""" Scrapes the specified posts. """
 
+	fail = 0
 	j = 0
 	k = 0
 	for i in post_numbers:
@@ -63,7 +66,7 @@ def process_posts(browser, post_numbers):
 
 		if os.path.isfile("posts/" + ones + "/" + tens + "/" + hundreds + "/" + str(i) + ".json"):
 			if random.randint(1, 10) == 10:
-				print "Skipping "  + str(i)
+				print "Skipping " + str(i)
 			continue
 
 		# Make directory structure if necessary.
@@ -96,9 +99,11 @@ def process_posts(browser, post_numbers):
 			elif isinstance(error_data.code, int) and error_data.code == 404:
 				print "Gab post deleted or ID not allocated"
 				print i
+				fail = fail + 1
 			elif isinstance(error_data.code, int) and error_data.code == 400:
 				print "Invalid request -- possibly a private Gab post?"
 				print i
+				fail = fail + 1
 			else:
 				print error_data.code
 				print traceback.format_exc()
@@ -117,16 +122,24 @@ def process_posts(browser, post_numbers):
 		elif pause_timer == 1 or pause_timer == 2:
 			time.sleep(0.1)
 
+		if fail > 1000:
+			del browser
+			browser = login()
+			fail = 0
+
 		k = k + 1
 		j = j + 1
 		if j >= 5000:
 			print "Medium length break."
 			time.sleep(random.randint(10, 20))
 			j = 0
+			del browser
+			browser = login()
 		if k >= 51000:
 			print "Long break."
 			time.sleep(random.randint(60, 90))
 			k = 0
+
 
 def process_args():
 	""" Extracts command line arguments. """
@@ -155,6 +168,7 @@ def process_args():
 		process_posts(browser, post_order)
 	else:
 		print "Failed login."
+
 
 if __name__ == "__main__":
 	process_args()

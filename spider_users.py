@@ -2,6 +2,7 @@
 
 import json
 
+
 def spider():
 	""" Main spidering code, searches for everyone who follows or is following anyone in current user list. """
 	existing = [x.strip() for x in open("names.txt", "r").read().split("\n") if len(x.strip())]
@@ -25,6 +26,7 @@ def spider():
 
 	print len(new), "new users discovered."
 	print len(existing) + len(new), "total users"
+
 
 if __name__ == "__main__":
 	spider()

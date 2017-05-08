@@ -16,6 +16,7 @@ def shuffle_users(user_names):
 	random.shuffle(user_names)
 	return user_names
 
+
 def login(username="", password=""):
 	""" Login to gab.ai. """
 	if not len(username) or not len(password):
@@ -46,6 +47,7 @@ def login(username="", password=""):
 	print r.read()[0:500]
 
 	return browser
+
 
 def process_users(browser, user_names):
 	""" Scrapes the specified posts. """
@@ -171,7 +173,6 @@ def process_users(browser, user_names):
 			time.sleep(random.randint(30, 60))
 
 
-
 def process_args():
 	""" Reads command line arguments for what users file to use. """
 	parser = argparse.ArgumentParser(description="Gab.ai scraper.")
@@ -189,6 +190,7 @@ def process_args():
 		process_users(browser, user_order)
 	else:
 		print "Failed login."
+
 
 if __name__ == "__main__":
 	process_args()
