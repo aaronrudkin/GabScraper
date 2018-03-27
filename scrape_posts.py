@@ -40,7 +40,7 @@ def login(username="", password=""):
 	browser.addheaders = [("User-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")]
 	r = browser.open("https://gab.ai/auth/login")
 
-	browser.select_form(nr=0)
+	browser.select_form(nr=1)
 	browser["username"] = username
 	browser["password"] = password
 	r = browser.submit()
