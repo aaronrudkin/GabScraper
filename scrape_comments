@@ -84,7 +84,7 @@ def process_comments(browser, comment_numbers):
 
 		# Read the post
 		try:
-			r = browser.open("https://gab.ai/posts/" + str(i)+ "/comments?sort=score")
+			r = browser.open("https://gab.ai/posts/" + str(i)+ "/comments/index?sort=score")
 			data = r.read()
 			with open("comments/" + ones + "/" + tens + "/" + hundreds + "/" + thousands + "/" + str(i) + ".json", "w") as f:
 				f.write(data)
