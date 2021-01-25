@@ -1,3 +1,7 @@
+# REPOSITORY DEPRECATED
+
+To readers checking this -- this scraper was written at a time where Gab used non-sparse sequential message IDs. When Gab switched to fediverse (e.g., being an implementation of Mastodon) as its backend, it switched to UUID-based message IDs. This scraper will no longer work. I have data from the first approxiamtely 8 million messages posted to Gab but have not yet made the data public at this time. This code is maintained for posterity but is no longer a viable approach to scrape Gab.
+
 # Gab Scraper
 
 This code scrapes a range of post IDs from [Gab.ai](http://gab.ai/), given a user login. I wrote it as part of an upcoming investigation into elite message transmission and social network analysis of Gab.
